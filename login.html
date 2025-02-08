@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习重点记录</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2196f3;
+            outline: none;
+        }
+
+        /* Button styles */
+        button {
+            padding: 12px 18px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #1976d2;
+        }
+
+        /* Card Style */
+        .list-group {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .list-group-item {
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-group-item h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .sub-item {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .status.not-started { background-color: #ff9800; }
+        .status.in-progress { background-color: #2196f3; }
+        .status.completed { background-color: #4caf50; }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #e53935;
+        }
+
+        .add-smaller-btn {
+            background-color: #4CAF50;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .add-smaller-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Indentation for smaller categories */
+        .smaller-category {
+            margin-left: 30px; /* Indentation */
+            margin-top: 10px;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .list-group-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>学习重点记录</h1>
+
+    <div class="form-group">
+        <input type="text" id="categoryInput" placeholder="输入大类名称..." />
+    </div>
+    <button onclick="addCategory()">添加大类</button>
+
+    <div class="list-group" id="categoryList"></div>
+</div>
+
+<!-- The Modal for Adding Categories -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCategoryModal()">&times;</span>
+        <h2>请输入小类名称</h2>
+        <input type="text" id="subCategoryInput" placeholder="输入小类名称...">
+        <button onclick="submitSubCategory()">提交</button>
+    </div>
+</div>
+
+<!-- The Modal for Adding Smaller Categories -->
+<div id="smallerCategoryModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSmallerCategoryModal()">&times;</span>
+        <h2>请输入更小类名称</h2>
+        <input type="text" id="smallerCategoryInput" placeholder="输入更小类名称...">
+        <button onclick="submitSmallerCategory()">提交</button>
+    </div>
+</div>
+
+<script>
+    // 从localStorage加载数据
+    function loadData() {
+        const data = localStorage.getItem('categories');
+        return data ? JSON.parse(data) : [];
+    }
+
+    // 保存数据到localStorage
+    function saveData() {
+        localStorage.setItem('categories', JSON.stringify(categories));
+    }
+
+    // 初始化数据
+    const categories = loadData();
+
+    // 更新大类和小类的显示
+    function updateCategoryList() {
+        const categoryList = document.getElementById('categoryList');
+        categoryList.innerHTML = "";
+
+        categories.forEach((category, categoryIndex) => {
+            const categoryItem = document.createElement('div');
+            categoryItem.classList.add('list-group-item');
+            categoryItem.innerHTML = `
+                <h3>${category.name}</h3>
+                <div class="sub-item">
+                    <button onclick="openCategoryModal(${categoryIndex})">添加小类</button>
+                    <button class="delete-btn" onclick="deleteCategory(${categoryIndex})">删除大类</button>
+                </div>
+            `;
+
+            // 添加小类
+            category.subCategories.forEach((subCategory, subCategoryIndex) => {
+                const subCategoryItem = document.createElement('div');
+                subCategoryItem.classList.add('sub-item');
+                subCategoryItem.innerHTML = `
+                    <span>${subCategory.name}</span>
+                    <span class="status ${subCategory.status}" onclick="changeStatus(${categoryIndex}, ${subCategoryIndex})">
+                        ${getStatusText(subCategory.status)}
+                    </span>
+                    <button class="delete-btn" onclick="deleteSubCategory(${categoryIndex}, ${subCategoryIndex})">删除小类</button>
+                    <button class="add-smaller-btn" onclick="openSmallerCategoryModal(${categoryIndex}, ${subCategoryIndex})">添加更小类</button>
+                `;
+
+                // Display smaller categories in a new line, with indentation
+                if (subCategory.smallerCategories) {
+                    subCategory.smallerCategories.forEach((smallerCategory, smallerCategoryIndex) => {
+                        const smallerCategoryItem = document.createElement('div');
+                        smallerCategoryItem.classList.add('smaller-category');
+                        smallerCategoryItem.innerHTML = `
+                            <span>更小类: ${smallerCategory.name}</span>
+                            <span class="status ${smallerCategory.status}" onclick="changeSmallerCategoryStatus(${categoryIndex}, ${subCategoryIndex}, ${smallerCategoryIndex})">
+                                ${getStatusText(smallerCategory.status)}
+                            </span>
+                            <button class="delete-btn" onclick="deleteSmallerCategory(${categoryIndex}, ${subCategoryIndex}, ${smallerCategoryIndex})">删除更小类</button>
+                        `;
+                        subCategoryItem.appendChild(smallerCategoryItem);
+                    });
+                }
+
+                categoryItem.appendChild(subCategoryItem);
+            });
+
+            categoryList.appendChild(categoryItem);
+        });
+    }
+
+    // 添加大类
+    function addCategory() {
+        const categoryName = document.getElementById('categoryInput').value.trim();
+        if (categoryName === "") {
+            alert("请输入大类名称！");
+            return;
+        }
+
+        const newCategory = {
+            name: categoryName,
+            subCategories: [] // Initialize with an empty array for subcategories
+        };
+
+        categories.push(newCategory);
+        saveData();
+        updateCategoryList();
+        document.getElementById('categoryInput').value = ""; // Clear input after adding
+    }
+
+    // 打开添加小类模态框
+    function openCategoryModal(categoryIndex) {
+        const modal = document.getElementById('categoryModal');
+        modal.style.display = 'block';
+        currentCategoryIndex = categoryIndex; // Store the index
+    }
+
+    // 关闭添加小类模态框
+    function closeCategoryModal() {
+        const modal = document.getElementById('categoryModal');
+        modal.style.display = 'none';
+    }
+
+    // 提交小类
+    function submitSubCategory() {
+        const subCategoryName = document.getElementById('subCategoryInput').value.trim();
+        if (subCategoryName === "") {
+            alert("请输入小类名称！");
+            return;
+        }
+
+        const subCategory = {
+            name: subCategoryName,
+            status: 'not-started' // Initial state
+        };
+
+        categories[currentCategoryIndex].subCategories.push(subCategory);
+        saveData();
+        updateCategoryList();
+        closeCategoryModal(); // Close the modal
+    }
+
+    // 打开添加更小类模态框
+    function openSmallerCategoryModal(categoryIndex, subCategoryIndex) {
+        const modal = document.getElementById('smallerCategoryModal');
+        modal.style.display = 'block';
+        currentCategoryIndex = categoryIndex;
+        currentSubCategoryIndex = subCategoryIndex;
+    }
+
+    // 关闭添加更小类模态框
+    function closeSmallerCategoryModal() {
+        const modal = document.getElementById('smallerCategoryModal');
+        modal.style.display = 'none';
+    }
+
+    // 提交更小类
+    function submitSmallerCategory() {
+        const smallerCategoryName = document.getElementById('smallerCategoryInput').value.trim();
+        if (smallerCategoryName === "") {
+            alert("请输入更小类名称！");
+            return;
+        }
+
+        const smallerCategory = {
+            name: smallerCategoryName,
+            status: 'not-started' // Initial state for smaller category
+        };
+
+        // Ensure smallerCategories exists
+        const subCategory = categories[currentCategoryIndex].subCategories[currentSubCategoryIndex];
+        if (!subCategory.smallerCategories) {
+            subCategory.smallerCategories = [];
+        }
+
+        subCategory.smallerCategories.push(smallerCategory);
+        saveData();
+        updateCategoryList();
+        closeSmallerCategoryModal();
+    }
+
+    // 修改状态
+    function changeStatus(categoryIndex, subCategoryIndex) {
+        const currentStatus = categories[categoryIndex].subCategories[subCategoryIndex].status;
+        const statuses = ['not-started', 'in-progress', 'completed'];
+        let nextStatus = statuses[(statuses.indexOf(currentStatus) + 1) % statuses.length];
+        categories[categoryIndex].subCategories[subCategoryIndex].status = nextStatus;
+        saveData();
+        updateCategoryList();
+    }
+
+    // 修改更小类状态
+    function changeSmallerCategoryStatus(categoryIndex, subCategoryIndex, smallerCategoryIndex) {
+        const currentStatus = categories[categoryIndex].subCategories[subCategoryIndex].smallerCategories[smallerCategoryIndex].status;
+        const statuses = ['not-started', 'in-progress', 'completed'];
+        let nextStatus = statuses[(statuses.indexOf(currentStatus) + 1) % statuses.length];
+        categories[categoryIndex].subCategories[subCategoryIndex].smallerCategories[smallerCategoryIndex].status = nextStatus;
+        saveData();
+        updateCategoryList();
+    }
+
+    // 删除大类
+    function deleteCategory(index) {
+        categories.splice(index, 1);
+        saveData();
+        updateCategoryList();
+    }
+
+    // 删除小类
+    function deleteSubCategory(categoryIndex, subCategoryIndex) {
+        categories[categoryIndex].subCategories.splice(subCategoryIndex, 1);
+        saveData();
+        updateCategoryList();
+    }
+
+    // 删除更小类
+    function deleteSmallerCategory(categoryIndex, subCategoryIndex, smallerCategoryIndex) {
+        categories[categoryIndex].subCategories[subCategoryIndex].smallerCategories.splice(smallerCategoryIndex, 1);
+        saveData();
+        updateCategoryList();
+    }
+
+    // 获取状态文字
+    function getStatusText(status) {
+        const statusMap = {
+            'not-started': '未开始',
+            'in-progress': '进行中',
+            'completed': '已完成'
+        };
+        return statusMap[status] || '未知状态';
+    }
+
+    // 初始化并显示列表
+    updateCategoryList();
+</script>
+</body>
+</html>
